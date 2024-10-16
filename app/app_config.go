@@ -53,7 +53,10 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	"google.golang.org/protobuf/types/known/durationpb"
 
+	labratmodulev1 "github.com/GuillaumeDonnet/RatNet/api/ratnet/labrat/module"
 	ratnetmodulev1 "github.com/GuillaumeDonnet/RatNet/api/ratnet/ratnet/module"
+	_ "github.com/GuillaumeDonnet/RatNet/x/labrat/module" // import for side-effects
+	labratmoduletypes "github.com/GuillaumeDonnet/RatNet/x/labrat/types"
 	_ "github.com/GuillaumeDonnet/RatNet/x/ratnet/module" // import for side-effects
 	ratnetmoduletypes "github.com/GuillaumeDonnet/RatNet/x/ratnet/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
@@ -94,6 +97,7 @@ var (
 		circuittypes.ModuleName,
 		// chain modules
 		ratnetmoduletypes.ModuleName,
+		labratmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 
@@ -119,6 +123,7 @@ var (
 		ibcfeetypes.ModuleName,
 		// chain modules
 		ratnetmoduletypes.ModuleName,
+		labratmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	}
 
@@ -138,6 +143,7 @@ var (
 		ibcfeetypes.ModuleName,
 		// chain modules
 		ratnetmoduletypes.ModuleName,
+		labratmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	}
 
@@ -158,6 +164,7 @@ var (
 		{Account: ibctransfertypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner}},
 		{Account: ibcfeetypes.ModuleName},
 		{Account: icatypes.ModuleName},
+		{Account: labratmoduletypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner, authtypes.Staking}},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 
@@ -296,6 +303,10 @@ var (
 			{
 				Name:   ratnetmoduletypes.ModuleName,
 				Config: appconfig.WrapAny(&ratnetmodulev1.Module{}),
+			},
+			{
+				Name:   labratmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&labratmodulev1.Module{}),
 			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},
