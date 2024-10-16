@@ -1,0 +1,15 @@
+syntax = "proto3";
+package ratnet.ratnet;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/GuillaumeDonnet/RatNet/x/ratnet/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "ratnet/x/ratnet/Params";
+  option (gogoproto.equal) = true;
+
+  
+}

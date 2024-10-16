@@ -1,0 +1,17 @@
+syntax = "proto3";
+package ratnet.ratnet;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "ratnet/ratnet/params.proto";
+
+option go_package = "github.com/GuillaumeDonnet/RatNet/x/ratnet/types";
+
+// GenesisState defines the ratnet module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
