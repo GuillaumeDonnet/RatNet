@@ -1,47 +1,64 @@
-# This workflow is useful if you want to automate the process of:
-#
-# a) Creating a new prerelease when you push a new tag with a "v" prefix (version).
-#
-#    This type of prerelease is meant to be used for production: alpha, beta, rc, etc. types of releases.
-#    After the prerelease is created, you need to make your changes on the release page at the relevant
-#    Github page and publish your release.
-#
-# b) Creating/updating the "latest" prerelease when you push to your default branch.
-#
-#    This type of prerelease is useful to make your bleeding-edge binaries available to advanced users.
-#
-# The workflow will not run if there is no tag pushed with a "v" prefix and no change pushed to your
-# default branch.
-on: push
-
 jobs:
   might_release:
     runs-on: ubuntu-latest
+    env:
+      TOKEN_NAME: "LabRat"
+      TOKEN_SYMBOL: "LAB"
+      TOKEN_DECIMALS: "6"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3  # Use the latest version
+      - name: Checkout Repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.20'  # Specify your Go version
+          go-version: '1.23.2'  # Ensure this matches your local Go version
 
-      - name: Install Ignite CLI
+      - name: Install Specific Ignite CLI Version
         run: |
-          curl https://get.ignite.com/cli! | bash
+          curl -L https://github.com/ignite/cli/releases/download/v38.5.3/ignite_38.5.3_linux_amd64.tar.gz -o ignite.tar.gz
+          tar -xzf ignite.tar.gz -C /tmp
+          sudo mv /tmp/ignite /usr/local/bin/ignite
+          ignite version
         env:
           DO_NOT_TRACK: 1
+
+      - name: Verify Ignite CLI Installation
+        run: |
+          which ignite
+          ignite version
 
       - name: Prepare Release Variables
         id: vars
         uses: ignite/cli/actions/release/vars@main
 
+      - name: Check Current Directory
+        run: pwd
+
+      - name: List Repository Files
+        run: ls -la
+
+      - name: Display Go Environment
+        run: go env
+
+      - name: Validate go.mod
+        run: go mod tidy
+
+      - name: Display Go Modules
+        run: go list -m all
+
+      - name: Show Ignite CLI Path
+        run: which ignite
+
+      - name: Show Ignite CLI Version
+        run: ignite version
+
       - name: Build Chain
         if: ${{ steps.vars.outputs.should_release == 'true' }}
         run: |
-          ignite chain build --release --release.prefix '${{ steps.vars.outputs.tarball_prefix }}' -t linux:amd64 -t darwin:amd64 -t darwin:arm64 -y
+          ignite chain build --release --release.prefix "${{ steps.vars.outputs.tarball_prefix }}" -t linux:amd64 -t darwin:amd64 -t darwin:arm64 -y
         env:
           DO_NOT_TRACK: 1
 
